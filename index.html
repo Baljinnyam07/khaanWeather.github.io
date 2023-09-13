@@ -41,21 +41,32 @@
         <li id="temperature" class="btn btn-primary button">Temperature</li>
         <li id="wind" class="btn btn-primary button">Wind</li>
       </ul>
+      <div id="time-info">
+        <span id="time-text"></span>
+        <button id="play-pause-bt" class="btn btn-primary btn-sm time-button">Play 3600x</button>
+        <input type="range" id="time-slider" min="0" max="11" step="1">
+      </div>
     </div>
-    <div id="time-info">
-      <span id="time-text"></span>
-      <button id="play-pause-bt" class="btn btn-primary btn-sm time-button">Play 3600x</button>
-      <input type="range" id="time-slider" min="0" max="11" step="1">
-    </div>
+    
     <div id="forecast" style="display: none;">
       <!-- Include the content for displaying the 5-day forecast here -->
       <h1>5-Day Weather Forecast</h1>
-      <!-- ... (forecast content) ... -->
+      <div id="DayFore" class="DayFore">
+        <iframe id="forecast_embed" type="text/html" frameborder="0" height="225" width="500" src="http://tsag-agaar.gov.mn/embed/?name=292&color=ef6e25&color2=cc530e&color3=ffffff&color4=ffffff&type=horizontal&tdegree=c&width=500"> </iframe> 
+        
+      </div>
+
+      <div id="excelConversion">
+        <button id="convertButton">Convert to Excel</button>
+      </div>
+      
+
     </div>
   </div>
   <script>
+    
       maptilersdk.config.apiKey = 'KFRONs89clwsK2jKgnHY';
-
+      
       const weatherLayers = {
         "precipitation": {
           "layer": null,
@@ -321,5 +332,71 @@
     };
 
   </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+  <script>
+    // Function to convert XML data to Excel
+    function convertXMLToExcel(xmlData) {
+      // Parse the XML data
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
+
+      // Extract data from the XML and format it as an array of objects
+      const data = [];
+      const forecasts = xmlDoc.getElementsByTagName('forecast');
+      for (let i = 0; i < forecasts.length; i++) {
+        const forecast = forecasts[i];
+        const date = forecast.getAttribute('date');
+        const temperature = forecast.getAttribute('temp');
+        const precipitation = forecast.getAttribute('precip');
+        const wind = forecast.getAttribute('wspd');
+
+        data.push({
+          Date: date,
+          Temperature: temperature,
+          Precipitation: precipitation,
+          Wind: wind,
+        });
+      }
+
+      // Create a worksheet
+      const ws = XLSX.utils.json_to_sheet(data);
+
+      // Create a workbook
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Forecast Data');
+
+      // Generate a Blob containing the Excel file
+      const blob = XLSX.write(wb, { bookType: 'xlsx', type: 'blob' });
+
+      // Create a download link for the Blob
+      const url = URL.createObjectURL(blob);
+
+      // Trigger the download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'forecast_data.xlsx';
+      a.click();
+
+      // Clean up
+      URL.revokeObjectURL(url);
+    }
+
+    // Function to handle button click
+    function handleConvertButtonClick() {
+      // Fetch the XML data using HTTPS
+      fetch('https://tsag-agaar.gov.mn/forecast_xml') // Use HTTPS here
+        .then((response) => response.text())
+        .then((xmlData) => {
+          // Convert XML to Excel and trigger download
+          convertXMLToExcel(xmlData);
+        })
+        .catch((error) => {
+          console.error('Error fetching or processing data:', error);
+        });
+    }
+
+    // Add a click event listener to the button
+    document.getElementById('convertButton').addEventListener('click', handleConvertButtonClick);
+    </script>
 </body>
 </html>
