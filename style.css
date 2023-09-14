@@ -1,5 +1,5 @@
 #container{
-    display: grid;
+  display: grid;
   grid: calc(100vh - 40px) / 100px 90% auto;
   grid-gap: 10px;
   background-color: CornflowerBlue;
@@ -41,3 +41,236 @@
   align-items: center;
 }
 
+:root {
+  font-family: 'Nunito Sans', sans-serif;
+  --hot: red;
+  --warm: orange;
+  --cool: lightblue;
+  --cold: blue;
+  --shadow-border :rgb(143, 143, 143);
+  background-color: lightskyblue;
+}
+
+h1{
+  font-size: 3rem;
+}
+
+.five-day,
+#main-card,
+.daily-card{
+  background-color: rgb(255, 255, 255);
+  box-shadow: 5px 5px 5px var(--shadow-border);
+  border: 1px solid var(--shadow-border);
+  padding: 5px;
+  border-radius: 15px;
+  text-align: center;
+  background-image: linear-gradient(180deg, var(--warm), var(--cool));
+}
+
+#container-daily-cards {
+  display: grid;
+  grid-template-columns: 15% 15% 15% 15% 15%;
+  column-gap: 3%;
+  justify-content: center;
+}
+#todays-info {
+  display: grid;
+  grid-template-columns: 25% 25% 25%;
+  grid-template-rows: 45% 45%;
+  justify-content: center;
+  align-items: center;
+}
+#main-card span, #main-card img{
+  padding: 5px;
+}
+
+#todays-day {
+  text-align: center;
+}
+
+#main-card{
+  margin-bottom: 10px;
+  width: 87%;
+  margin-left: auto;
+  margin-right: auto;
+
+}
+header {
+  text-align: center;
+}
+
+.weather-display {
+  display: grid;
+  grid-template-rows: 40% 10% 45%;
+}
+
+.five-day {
+  text-align: center;
+  width: 87%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 5px;
+}
+
+span {
+  box-shadow: 2px 2px 5px rgba(119, 136, 153, 0.397);
+  border-radius: 5px;
+}
+
+main{
+  display: grid;
+  grid-template-columns: 20% 70%;
+  justify-content: center;
+}
+
+#search-container,
+header {
+  display: relative;
+  background-color: var(--warm);
+  border: 1px solid var(--shadow-border);
+  padding: 5px;
+  border-radius: 15px;
+  box-shadow: 5px 5px 5px var(--shadow-border);
+  margin-bottom: 10px;
+}
+
+#search-container input {
+  background-color: var(--cool);
+  border-radius: 15px;
+}
+
+#search-container input:focus-visible {
+  background-color: var(--warm);
+}
+
+#search-container{
+  display: grid;
+  grid-template-columns: auto;
+  justify-content: center;
+  align-items: start;
+}
+
+.five-day,
+#todays-day {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+
+.favorable-uv{
+  background-color: rgba(51, 214, 51, 0.541);
+}
+
+.moderate-uv {
+  background-color: rgba(214, 176, 51, 0.541);
+}
+.severe-uv {
+  background-color: rgba(214, 51, 51, 0.541);
+}
+
+header {
+  width: 90%;
+  margin: auto;
+  margin-bottom: 10px;
+}
+
+button:hover{
+  background-image: linear-gradient(180deg, var(--cool), var(--warm));
+}
+
+button:active{
+  color: mediumblue;
+  box-shadow: none;
+}
+
+#search{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+}
+
+.prev-searched{
+  background-color: var(--cool);
+  margin: 3px;
+  margin-bottom: 5px;
+  display: block;
+  text-align: center;
+}
+
+.prev-searched:hover {
+  background-color: var(--warm);
+  border: 3px solid var(--cool);
+}
+
+#todays-date{
+  font-size: 1.5rem;
+}
+
+.weather-img{
+  max-width: 80%;
+}
+
+.selector-visible {
+  display: block;
+  position: relative;
+  top: 0;
+  left: 0%;
+  right: 0;
+  background-color: var(--warm);
+  border-radius: 10px;
+  border: 5px solid var(--cool);
+  box-shadow: 5px 5px 5px lightgray;
+  min-width : 80%;
+
+}
+.selector-visible > * {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+}
+
+.selector-hidden {
+  display: none;
+}
+
+aside{
+  display: grid;
+  justify-content: center;
+  row-gap: 1rem;
+}
+
+#city-name,
+#todays-date {
+  box-shadow: none;
+}
+
+@media screen and (max-width: 960px){
+main {
+  display: block;
+  justify-content: center;
+
+  }
+  #search-container{
+      width: 87%;
+      margin: auto auto 1rem auto;
+  }
+}
+
+#city-list > button {
+  display: block;
+  margin-top: 10px;
+  width: 200px;
+  border: 1px solid black;
+  border-radius: 10px;
+  background-color: aliceblue;
+}
+
+#cities{
+  display: flex;
+  justify-content: center;
+  border: 1px solid black;
+  border-radius: 10px;
+  background-color: var(--warm);
+}

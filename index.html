@@ -8,6 +8,9 @@
   <script src="/js/bootstrap.bundle.min.js?t=1693319344"></script>
   <script src="https://cdn.maptiler.com/maptiler-sdk-js/v1.1.1/maptiler-sdk.umd.min.js"></script>
   <link href="https://cdn.maptiler.com/maptiler-sdk-js/v1.1.1/maptiler-sdk.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;1,200;1,300;1,400&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.maptiler.com/maptiler-weather/v1.0.0/maptiler-weather.umd.min.js"></script>
   <link rel="stylesheet" href="style.css">
@@ -47,356 +50,85 @@
         <input type="range" id="time-slider" min="0" max="11" step="1">
       </div>
     </div>
-    
     <div id="forecast" style="display: none;">
       <!-- Include the content for displaying the 5-day forecast here -->
       <h1>5-Day Weather Forecast</h1>
-      <div id="DayFore" class="DayFore">
-        <iframe id="forecast_embed" type="text/html" frameborder="0" height="225" width="500" src="http://tsag-agaar.gov.mn/embed/?name=292&color=ef6e25&color2=cc530e&color3=ffffff&color4=ffffff&type=horizontal&tdegree=c&width=500"> </iframe> 
-        
-      </div>
-
-      <div id="excelConversion">
-        <button id="convertButton">Convert to Excel</button>
-      </div>
-      
-
+        <main>
+          <div id="cities">
+            <section id="city-list">
+            </section>
+          </div>
+          <section id="weather-display">
+            <div id="main-card">
+              <div id="todays-day"><span id="city-name"></span> - <span id="todays-date"></span></div>
+              <hr>
+              <div id="todays-info">
+                <div><img src="" id="today-img"></div>
+                <span id="today-max"></span>
+                <span id="today-min"></span>
+                <span id="today-wind"></span>
+                <span id="today-humidity"></span>
+                <span id="today-uv" class="severe-uv">UV: High</span>
+              </div>
+            </div>
+            <div class="five-day">
+              5 day forecast
+            </div>
+            <div id="container-daily-cards">
+              <div class="daily-card" data-fiveday="0">
+                <p class="day"></p>
+                <hr>
+                <img src="" class="weather-img">
+                <p class="max"></p>
+                <p class="min"></p>
+                <p class="wind"></p>
+                <p class="humidity"></p>
+              </div>        
+              <div class="daily-card" data-fiveday="1">
+                <p class="day"></p>
+                <hr>
+                <img src="" class="weather-img">
+                <p class="max"></p>
+                <p class="min"></p>
+                <p class="wind"></p>
+                <p class="humidity"></p>
+              </div>        
+              <div class="daily-card" data-fiveday="2">
+                <p class="day"></p>
+                <hr>
+                <img src="" class="weather-img">
+                <p class="max"></p>
+                <p class="min"></p>
+                <p class="wind"></p>
+                <p class="humidity"></p>
+              </div>        
+              <div class="daily-card" data-fiveday="3">
+                <p class="day"></p>
+                <hr>
+                <img src="" class="weather-img">
+                <p class="max"></p>
+                <p class="min"></p>
+                <p class="wind"></p>
+                <p class="humidity"></p>
+              </div>        
+              <div class="daily-card" data-fiveday="4">
+                <p class="day"></p>
+                <hr>
+                <img src="" class="weather-img">
+                <p class="max"></p>
+                <p class="min"></p>
+                <p class="wind"></p>
+                <p class="humidity"></p>
+              </div>
+            </div>
+          </section>
+          
+        </main>
     </div>
   </div>
-  <script>
-    
-      maptilersdk.config.apiKey = 'KFRONs89clwsK2jKgnHY';
-      
-      const weatherLayers = {
-        "precipitation": {
-          "layer": null,
-          "value": "value",
-          "units": " mm"
-        },
-        "pressure": {
-          "layer": null,
-          "value": "value",
-          "units": " hPa"
-        },
-        "radar": {
-          "layer": null,
-          "value": "value",
-          "units": " dBZ"
-        },
-        "temperature": {
-          "layer": null,
-          "value": "value",
-          "units": "°"
-        },
-        "wind": {
-          "layer": null,
-          "value": "speedMetersPerSecond",
-          "units": " m/s"
-        }
-      };
-
-      const map = (window.map = new maptilersdk.Map({
-        container: 'map', // container's id or the HTML element to render the map
-        style: maptilersdk.MapStyle.BACKDROP,  // stylesheet location
-        zoom: 1,
-        center: [-42.66, 37.63],
-        hash: true,
-      }));
-
-      const initWeatherLayer = "wind";
-      const timeInfoContainer = document.getElementById("time-info");
-      const timeTextDiv = document.getElementById("time-text");
-      const timeSlider = document.getElementById("time-slider");
-      const playPauseButton = document.getElementById("play-pause-bt");
-      const pointerDataDiv = document.getElementById("pointer-data");
-      let pointerLngLat = null;
-      let activeLayer = null;
-      let isPlaying = false;
-      let currentTime = null;
-
-      timeSlider.addEventListener("input", (evt) => {
-        const weatherLayer = weatherLayers[activeLayer]?.layer;
-        if (weatherLayer) {
-          weatherLayer.setAnimationTime(parseInt(timeSlider.value / 1000));
-        }
-      });
-
-      // When clicking on the play/pause
-      playPauseButton.addEventListener("click", () => {
-        const weatherLayer = weatherLayers[activeLayer]?.layer;
-        if (weatherLayer) {
-          if (isPlaying) {
-            pauseAnimation(weatherLayer);
-          } else {
-            playAnimation(weatherLayer);
-          }
-        }
-      });
-
-      function pauseAnimation(weatherLayer) {
-        weatherLayer.animateByFactor(0);
-        playPauseButton.innerText = "Play 3600x";
-        isPlaying = false;
-      }
-
-      function playAnimation(weatherLayer) {
-        weatherLayer.animateByFactor(3600);
-        playPauseButton.innerText = "Pause";
-        isPlaying = true;
-      }
-
-      map.on('load', function () {
-        map.setPaintProperty("Water", 'fill-color', "rgba(0, 0, 0, 0.4)");
-        initWeatherMap(initWeatherLayer);
-      });
-
-      map.on('mouseout', function(evt) {
-        if (!evt.originalEvent.relatedTarget) {
-          pointerDataDiv.innerText = "";
-          pointerLngLat = null;
-        }
-      });
-      
-
-      function updatePointerValue(lngLat) {
-        if (!lngLat) return;
-        pointerLngLat = lngLat;
-        const weatherLayer = weatherLayers[activeLayer]?.layer;
-        const weatherLayerValue = weatherLayers[activeLayer]?.value;
-        const weatherLayerUnits = weatherLayers[activeLayer]?.units;
-        if (weatherLayer) {
-          const value = weatherLayer.pickAt(lngLat.lng, lngLat.lat);
-          if (!value) {
-            pointerDataDiv.innerText = "";
-            return;
-          }
-          pointerDataDiv.innerText = `${value[weatherLayerValue].toFixed(1)}${weatherLayerUnits}`
-        }
-      }
-
-      map.on('mousemove', (e) => {
-        updatePointerValue(e.lngLat);
-      });
-      
-      document.getElementById('buttons').addEventListener('click', function (event) {
-        // Change layer based on button id
-        changeWeatherLayer(event.target.id);
-      });
-
-      function changeWeatherLayer(type) {
-        if (type !== activeLayer) {
-          if (map.getLayer(activeLayer)) {
-            const activeWeatherLayer = weatherLayers[activeLayer]?.layer;
-            if (activeWeatherLayer) {
-              currentTime = activeWeatherLayer.getAnimationTime();
-              map.setLayoutProperty(activeLayer, 'visibility', 'none');
-            }
-          }
-          activeLayer = type;
-          const weatherLayer = weatherLayers[activeLayer].layer || createWeatherLayer(activeLayer);
-          if (map.getLayer(activeLayer)) {
-            map.setLayoutProperty(activeLayer, 'visibility', 'visible');
-          } else {
-            map.addLayer(weatherLayer, 'Water');
-          }
-          changeLayerLabel(activeLayer);
-          activateButton(activeLayer);
-          changeLayerAnimation(weatherLayer);
-          return weatherLayer;
-        }
-      }
-
-      function activateButton(activeLayer) {
-        const buttons = document.getElementsByClassName('button');
-        for (let i = 0; i < buttons.length; i++) {
-          const btn = buttons[i];
-          if (btn.id === activeLayer) {
-            btn.classList.add('active');
-          } else {
-            btn.classList.remove('active');
-          }
-        }
-      }
-
-      function changeLayerAnimation(weatherLayer) {
-        weatherLayer.setAnimationTime(parseInt(timeSlider.value / 1000));
-        if (isPlaying) {
-          playAnimation(weatherLayer);
-        } else {
-          pauseAnimation(weatherLayer);
-        }
-      }
-
-      function createWeatherLayer(type){
-        let weatherLayer = null;
-        switch (type) {
-          case 'precipitation':
-            weatherLayer = new maptilerweather.PrecipitationLayer({id: 'precipitation'});
-            break;
-          case 'pressure':
-            weatherLayer = new maptilerweather.PressureLayer({
-              opacity: 0.8,
-              id: 'pressure'
-            });
-            break;
-          case 'radar':
-            weatherLayer = new maptilerweather.RadarLayer({
-              opacity: 0.8,
-              id: 'radar'
-            });
-            break;
-          case 'temperature':
-            weatherLayer = new maptilerweather.TemperatureLayer({
-              colorramp: maptilerweather.ColorRamp.builtin.TEMPERATURE_3,
-              id: 'temperature'
-            });
-            break;
-          case 'wind':
-            weatherLayer = new maptilerweather.WindLayer({id: 'wind'});
-            break;
-        }
-
-        // Called when the animation is progressing
-        weatherLayer.on("tick", event => {
-          refreshTime();
-          updatePointerValue(pointerLngLat);
-        });
-
-        // Called when the time is manually set
-        weatherLayer.on("animationTimeSet", event => {
-          refreshTime();
-        });
-
-        // Event called when all the datasource for the next days are added and ready.
-        // From now on, the layer nows the start and end dates.
-        weatherLayer.on("sourceReady", event => {
-          const startDate = weatherLayer.getAnimationStartDate();
-          const endDate = weatherLayer.getAnimationEndDate();
-          if (timeSlider.min > 0){
-            weatherLayer.setAnimationTime(currentTime);
-            changeLayerAnimation(weatherLayer);
-          } else {
-            const currentDate = weatherLayer.getAnimationTimeDate();
-            timeSlider.min = +startDate;
-            timeSlider.max = +endDate;
-            timeSlider.value = +currentDate;
-          }
-        });
-
-        weatherLayers[type].layer = weatherLayer;
-        return weatherLayer;
-      }
-
-      // Update the date time display
-      function refreshTime() {
-        const weatherLayer = weatherLayers[activeLayer]?.layer;
-        if (weatherLayer) {
-          const d = weatherLayer.getAnimationTimeDate();
-          timeTextDiv.innerText = d.toString();
-          timeSlider.value = +d;
-        }
-      }
-
-      function changeLayerLabel(type) {
-        document.getElementById("variable-name").innerText = type;
-      }
-
-      function initWeatherMap(type) {
-        const weatherLayer = changeWeatherLayer(type);
-      }
-
-      document.getElementById('showRadar').addEventListener('click', function () {
-      showMap();
-    });
-
-    // Add an event listener to the "Forecast" button
-    document.getElementById('showForecast').addEventListener('click', function () {
-      showForecast();
-    });
-
-    // Function to show the map and hide the forecast
-    function showMap() {
-      document.getElementById('map').style.display = 'block';
-      document.getElementById('forecast').style.display = 'none';
-    }
-
-    // Function to show the forecast and hide the map
-    function showForecast() {
-      document.getElementById('map').style.display = 'none';
-      document.getElementById('forecast').style.display = 'block';
-    }
-
-    // Initialize the map when the page loads
-    window.onload = function () {
-      showMap(); // Show the map by default
-    };
-
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-  <script>
-    // Function to convert XML data to Excel
-    function convertXMLToExcel(xmlData) {
-      // Parse the XML data
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
-
-      // Extract data from the XML and format it as an array of objects
-      const data = [];
-      const forecasts = xmlDoc.getElementsByTagName('forecast');
-      for (let i = 0; i < forecasts.length; i++) {
-        const forecast = forecasts[i];
-        const date = forecast.getAttribute('date');
-        const temperature = forecast.getAttribute('temp');
-        const precipitation = forecast.getAttribute('precip');
-        const wind = forecast.getAttribute('wspd');
-
-        data.push({
-          Date: date,
-          Temperature: temperature,
-          Precipitation: precipitation,
-          Wind: wind,
-        });
-      }
-
-      // Create a worksheet
-      const ws = XLSX.utils.json_to_sheet(data);
-
-      // Create a workbook
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Forecast Data');
-
-      // Generate a Blob containing the Excel file
-      const blob = XLSX.write(wb, { bookType: 'xlsx', type: 'blob' });
-
-      // Create a download link for the Blob
-      const url = URL.createObjectURL(blob);
-
-      // Trigger the download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'forecast_data.xlsx';
-      a.click();
-
-      // Clean up
-      URL.revokeObjectURL(url);
-    }
-
-    // Function to handle button click
-    function handleConvertButtonClick() {
-      // Fetch the XML data using HTTPS
-      fetch('https://tsag-agaar.gov.mn/forecast_xml') // Use HTTPS here
-        .then((response) => response.text())
-        .then((xmlData) => {
-          // Convert XML to Excel and trigger download
-          convertXMLToExcel(xmlData);
-        })
-        .catch((error) => {
-          console.error('Error fetching or processing data:', error);
-        });
-    }
-
-    // Add a click event listener to the button
-    document.getElementById('convertButton').addEventListener('click', handleConvertButtonClick);
-    </script>
+  <script src="radar.js"></script>
+  <script src="cities.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+  <script src="forecast.js"></script>
 </body>
 </html>
